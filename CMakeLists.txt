@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(sbg_driver)
 
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_FLAGS         "-Wall -Wextra")
+set(CMAKE_CXX_FLAGS_DEBUG   "-O0 -g")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
+
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   sensor_msgs
@@ -9,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   message_generation
 )
+
 
 ################################################
 ## Declare ROS messages, services and actions ##
@@ -78,6 +84,7 @@ catkin_package(
 add_subdirectory(external/sbgECom)
 
 include_directories(
+  SYSTEM
   ${catkin_INCLUDE_DIRS}
   ${PROJECT_SOURCE_DIR}/include/sbg_driver/
   ${PROJECT_SOURCE_DIR}/external/sbgECom/common
