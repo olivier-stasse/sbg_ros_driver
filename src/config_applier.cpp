@@ -245,6 +245,10 @@ void ConfigApplier::configureGnssInstallation(const SbgEComGnssInstallation& ref
   gnss_config_primary   = SbgVector3<float>(ref_gnss_installation.leverArmPrimary, 3);
   gnss_config_secondary = SbgVector3<float>(ref_gnss_installation.leverArmSecondary, 3);
 
+  ROS_WARN("Gnss device primary %f %f %f."
+           ,gnss_device_primary(0)
+           ,gnss_device_primary(1)
+           ,gnss_device_primary(2));
   if ((gnss_device_primary != gnss_config_primary)
   || (gnss_device_secondary != gnss_config_secondary)
   || (gnss_installation.leverArmPrimaryPrecise != ref_gnss_installation.leverArmPrimaryPrecise)
@@ -337,7 +341,7 @@ void ConfigApplier::configureOdometerRejection(const SbgEComOdoRejectionConf& re
   error_code = sbgEComCmdOdoGetRejection(&m_ref_sbg_com_handle, &odom_rejection);
 
   checkConfigurationGet(error_code, std::string("Odometer rejection"));
-  
+
   if (odom_rejection.velocity != ref_odometer_rejection.velocity)
   {
     error_code = sbgEComCmdOdoSetRejection(&m_ref_sbg_com_handle, &ref_odometer_rejection);
@@ -375,7 +379,7 @@ void ConfigApplier::configureOutput(SbgEComOutputPort output_port, const ConfigS
   else if (current_output_mode != ref_log_output.output_mode)
   {
     error_code = sbgEComCmdOutputSetConf(&m_ref_sbg_com_handle, output_port, ref_log_output.message_class, ref_log_output.message_id, ref_log_output.output_mode);
-    
+
     if (error_code != SBG_NO_ERROR)
     {
       std::string error_message("[Config] Unable to set the output configuration : Class[");
@@ -414,7 +418,8 @@ void ConfigApplier::applyConfiguration(const ConfigStore& ref_config_store)
   configureMagModel(ref_config_store.getMagnetometerModel());
   configureMagRejection(ref_config_store.getMagnetometerRejection());
   configureGnssModel(ref_config_store.getGnssModel());
-  configureGnssInstallation(ref_config_store.getGnssInstallation());
+  if (ref_config_store.getAidingAssignement().gps1Port != 255)
+    configureGnssInstallation(ref_config_store.getGnssInstallation());
   configureGnssRejection(ref_config_store.getGnssRejection());
   configureOdometer(ref_config_store.getOdometerConf());
   configureOdometerLevelArm(ref_config_store.getOdometerLevelArms());
